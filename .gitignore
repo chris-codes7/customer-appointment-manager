@@ -1,0 +1,5 @@
+
+customer_manager.db
+__pycache__/
+*.py[cod]
+.env
