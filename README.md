@@ -14,7 +14,7 @@ It uses SQLite for data storage.
 - Prevents customers from being deleted while they still have appointments
 - Parameterised SQL queries for database operations to help prevent SQL injection
 
-# Technologies Used
+## Technologies Used
 
 - Python
 - SQLite
