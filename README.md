@@ -14,11 +14,19 @@ It uses SQLite for data storage.
 - Prevents customers from being deleted while they still have appointments
 - Parameterised SQL queries for database operations to help prevent SQL injection
 
+## Automated Testing
+This project includes 11 automated unit tests developed using Python's built-in unittest framework..
+The tests cover database creation, customer and appointment operations, customer searches, deletion safeguards and main menu input validation
+Tests use temporary SQLite databases to avoid modifying real application data, alongside mocked user inputs to simulate interactions with the application
+
+All 11 tests currently pass.
+
 ## Technologies Used
 
 - Python
 - SQLite
 - Git and GitHub
+- Python unittest framework (automated testing)
 
 ## How to run the program
 
@@ -46,3 +54,13 @@ It uses SQLite for data storage.
    ```bash
    python main.py
    ```
+
+## How to run tests:
+
+From the project's root directory, run:
+
+```bash
+python -m unittest discover -s tests -p "test_*.py" -v
+```
+
+This automatically discovers and runs the tests located in the tests folder.

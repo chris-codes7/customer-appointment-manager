@@ -2,8 +2,9 @@ import sqlite3
 from datetime import datetime
 
 
-def create_database():
-     connection = sqlite3.connect("customer_manager.db")
+
+def create_database(database_path="customer_manager.db"): #This function sets up the database tables, customers and appointments if they do not already exist. -> If function has no paramter passed then database_path = "customer_manager.db"
+     connection = sqlite3.connect(database_path) # Creates the specified database if it doesn't exist else it will opens database with its contents.
      cursor = connection.cursor()
 
      cursor.execute(
@@ -27,8 +28,8 @@ def create_database():
      connection.commit()
      connection.close()
 
-def add_appointment():
-     connection = sqlite3.connect("customer_manager.db")
+def add_appointment(database_path="customer_manager.db"): # allows the user to create an appointment belonging to a specific customer using their customer ID. Validates customer ID, date and time
+     connection = sqlite3.connect(database_path)
      cursor = connection.cursor()
      while True:
           try:
@@ -70,7 +71,7 @@ def add_appointment():
 
 
      
-def add_customer(): 
+def add_customer(database_path="customer_manager.db"): # allows the user to add a customer to the customer table by entering a name, email and phone number (also validates name, phone and email)
     while True:
           name = input("Enter your name")
           if not name.strip(): # If user has inputted just spaces or nothing -> return not False = True
@@ -80,17 +81,17 @@ def add_customer():
                     email = input("Enter your email")
                     if not email.strip():
                          print("Enter a valid email")
-                    elif "@" not in email or "." not in email: #or gate used. If or gate = True-> invalid email. Testing for invalid emails.
+                    elif "@" not in email or "." not in email: # or gate used. If or gate = True-> invalid email. Testing for invalid emails.
                          print("Enter a valid email")
                     else:
                          while True:
                               phone_number = input("Enter your phone number no spaces")
                               if not phone_number.strip():
                                    print("Enter a valid phone number no spaces")
-                              elif not phone_number.isdigit(): #Checking if its digits. If NOT digit return True -> invalid phone number
+                              elif not phone_number.isdigit(): # Checking if its digits. If NOT digit return True -> invalid phone number
                                    print("Enter a valid phone number no spaces")
                               else:
-                                   connection = sqlite3.connect("customer_manager.db")
+                                   connection = sqlite3.connect(database_path)
                                    cursor = connection.cursor()
                                    cursor.execute(
                                         "INSERT INTO customers (name, email, phone) VALUES (?, ?, ?)",
@@ -104,8 +105,8 @@ def add_customer():
                               
 
 
-def view_appointments():
-     connection = sqlite3.connect("customer_manager.db")
+def view_appointments(database_path="customer_manager.db"): # displays all appointments and their details date,time and appointment ID from the appointment table, along with the customer name from the customer table
+     connection = sqlite3.connect(database_path)
      cursor = connection.cursor()
      cursor.execute("""
      SELECT appointments.appointment_id, customers.name, appointments.date, appointments.time
@@ -123,8 +124,8 @@ def view_appointments():
 
 
 
-def view_customer():
-        connection = sqlite3.connect("customer_manager.db")
+def view_customer(database_path="customer_manager.db"): # display all customers and their details from the customers table to the user
+        connection = sqlite3.connect(database_path)
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM customers")
         customer_rows = cursor.fetchall()
@@ -136,8 +137,8 @@ def view_customer():
              print("\n")
         connection.close()
 
-def search_appointment():
-     connection = sqlite3.connect("customer_manager.db")
+def search_appointment(database_path="customer_manager.db"): # Takes a customer ID and finds all appointments assosciated to that customer. The appointments are then displayed with their information to the user
+     connection = sqlite3.connect(database_path)
      cursor = connection.cursor()
      while True:
           try:
@@ -166,8 +167,8 @@ def search_appointment():
                print("Time:", appointment[3])
      connection.close()
 
-def search_customer():
-        connection = sqlite3.connect("customer_manager.db")
+def search_customer(database_path="customer_manager.db"): # Takes a customer ID and selects all details assosicated to that customer from the customer table, displaying it to the user
+        connection = sqlite3.connect(database_path)
         cursor = connection.cursor()
         while True:
                     try:
@@ -191,8 +192,8 @@ def search_customer():
             print("\n")
         connection.close()
 
-def delete_appointment():
-     connection = sqlite3.connect("customer_manager.db")
+def delete_appointment(database_path="customer_manager.db"): # Takes an appointment ID and deletes the matching appointment from the appointment table.
+     connection = sqlite3.connect(database_path)
      cursor = connection.cursor()
      while True:
           try:
@@ -204,18 +205,18 @@ def delete_appointment():
           "DELETE FROM appointments where appointment_id = ?",
           (idcheck,)
      )
-     if cursor.rowcount == 0:
+     if cursor.rowcount == 0: # If the row count == 0 then no rows were deleted. In this case this means the appointment ID didn't exist
           print("Appointment not Found! There was no appointment with the ID:", idcheck)
 
      else:
-          print("Appointment Found & Deleted with the ID:", idcheck)
+          print("Appointment Found & Deleted with the ID:", idcheck) 
      connection.commit()
      connection.close()
 
 
 
-def delete_customer():
-            connection = sqlite3.connect("customer_manager.db")
+def delete_customer(database_path="customer_manager.db"): # deletes a customer by taking a customer id. The deletion can only occur if the customer has no appointments and exists
+            connection = sqlite3.connect(database_path)
             cursor = connection.cursor()
             while True:
                  try:
@@ -223,7 +224,7 @@ def delete_customer():
                     break
                  except ValueError:
                       print("A valid customer ID must be inputted")
-            cursor.execute( # This part is searching for the customer
+            cursor.execute( # This part is searching for the customer using the customer id inputted by the user
                  "SELECT * FROM customers WHERE id = ?",
                  (idcheck,)
             )
@@ -250,69 +251,71 @@ def delete_customer():
 
 
 
-create_database()   
+def main(): # this is the command line menu displayed to the user in the terminal. The user interacts with the program using numbers 1-9
+     create_database()   
 
-while True:
+     while True:
 
-    print(""" 
-    ======================================
-        Customer & Appointment Manager
-    ======================================
+          print(""" 
+          ======================================
+               Customer & Appointment Manager
+          ======================================
 
-    1. Add Customer
-    2. View Customer
-    3. Search Customer
-    4. Delete Customer
-    ----------------------
-    5. Add Appointment
-    6. View Appointment
-    7. Search Appointment
-    8. Delete Appointment
-    ----------------------
-    9. Exit
+          1. Add Customer
+          2. View Customer
+          3. Search Customer
+          4. Delete Customer
+          ----------------------
+          5. Add Appointment
+          6. View Appointment
+          7. Search Appointment
+          8. Delete Appointment
+          ----------------------
+          9. Exit
 
-    """)
+          """)
 
-    while True:
-          try: 
-               user_choice = int(input("Enter your choice (1-9):"))
-               if user_choice > 9 or user_choice < 1:
-                    print("Invalid choice, Enter a choice (1-9)")
-               else:
+          while True:
+                    try: 
+                         user_choice = int(input("Enter your choice (1-9):"))
+                         if user_choice > 9 or user_choice < 1:
+                              print("Invalid choice, Enter a choice (1-9)")
+                         else:
+                              break
+                    except ValueError:
+                         print("Invalid choice, Enter a choice (1-9)")
+
+                         
+          if user_choice == 1:
+                    add_customer()
+
+          elif user_choice == 2:
+                    view_customer()
+
+          elif user_choice == 3:
+                    search_customer()
+
+          elif user_choice == 4:
+                    delete_customer()
+
+          elif user_choice == 5:
+                    add_appointment()
+
+          elif user_choice == 6:
+                    view_appointments()
+
+          elif user_choice == 7:
+                    search_appointment()
+
+          elif user_choice == 8:
+                    delete_appointment()
+
+          elif user_choice == 9:
                     break
-          except ValueError:
-               print("Invalid choice, Enter a choice (1-9)")
+          
 
-               
-    if user_choice == 1:
-          add_customer()
-
-    elif user_choice == 2:
-          view_customer()
-
-    elif user_choice == 3:
-          search_customer()
-
-    elif user_choice == 4:
-          delete_customer()
-
-    elif user_choice == 5:
-          add_appointment()
-
-    elif user_choice == 6:
-          view_appointments()
-
-    elif user_choice == 7:
-          search_appointment()
-
-    elif user_choice == 8:
-          delete_appointment()
-
-    elif user_choice == 9:
-          break
-     
-
-
+if __name__ == "__main__": # if this file isn't being run directly, the main() will not be called. (Won't run if its imported used for testing)
+      main()
 
 
 
